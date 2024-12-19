@@ -9,7 +9,7 @@ use embedded_hal::digital::{ErrorType, InputPin};
 
 /// GPIO pad in input mode.
 pub struct Input<'a, const N: usize, M> {
-    inner: super::Inner<'a, N, typestate::Input<M>>,
+    pub(crate) inner: super::Inner<'a, N, typestate::Input<M>>,
 }
 
 impl<'a, const N: usize, M> Input<'a, N, M> {

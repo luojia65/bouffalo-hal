@@ -121,6 +121,7 @@ mod convert;
 mod disabled;
 mod gpio_group;
 mod input;
+mod input_async;
 mod output;
 mod pad_dummy;
 mod pad_v1;
