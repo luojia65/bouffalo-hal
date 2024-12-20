@@ -263,13 +263,14 @@ impl<'a, const N: usize, M> Padv2<'a, N, M> {
             _mode: PhantomData,
         }
     }
+    /// Configures the pin to operate as an Inter-Integrated Circuit signal pin.
     #[inline]
     pub fn into_i2c<const I: usize>(self) -> Padv2<'a, N, I2c<I>> {
         let config = v2::GpioConfig::RESET_VALUE
             .enable_input()
             .enable_output()
             .enable_schmitt()
-            .set_drive(Drive::Drive0)
+            .set_drive(Drive::Drive1)
             .set_pull(Pull::Up)
             .set_function(I2c::<I>::FUNCTION_V2);
         unsafe {
