@@ -1,6 +1,5 @@
 //! Universal Asynchronous Receiver/Transmitter.
 use crate::clocks::Clocks;
-use core::ops::Deref;
 
 mod register;
 pub use register::*;
@@ -18,14 +17,14 @@ mod asynch;
 pub use asynch::*;
 
 /// Extend constructor to owned UART register blocks.
-pub trait UartExt<PADS>: Sized {
+pub trait UartExt<'a, PADS> {
     /// Creates a polling serial instance, without interrupt or DMA configurations.
     fn freerun<const I: usize>(
         self,
         config: Config,
         pads: PADS,
         clocks: &Clocks,
-    ) -> Result<BlockingSerial<Self, PADS>, ConfigError>
+    ) -> Result<BlockingSerial<'a, PADS>, ConfigError>
     where
         PADS: Pads<I>;
     /// Creates an interrupt driven async/await serial instance without DMA configurations.
@@ -35,19 +34,19 @@ pub trait UartExt<PADS>: Sized {
         pads: PADS,
         clocks: &Clocks,
         state: &'static SerialState,
-    ) -> Result<AsyncSerial<Self, PADS>, ConfigError>
+    ) -> Result<AsyncSerial<'a, PADS>, ConfigError>
     where
         PADS: Pads<I>;
 }
 
-impl<UART: Deref<Target = RegisterBlock>, PADS> UartExt<PADS> for UART {
+impl<'a, PADS> UartExt<'a, PADS> for &'a RegisterBlock {
     #[inline]
     fn freerun<const I: usize>(
         self,
         config: Config,
         pads: PADS,
         clocks: &Clocks,
-    ) -> Result<BlockingSerial<Self, PADS>, ConfigError>
+    ) -> Result<BlockingSerial<'a, PADS>, ConfigError>
     where
         PADS: Pads<I>,
     {
@@ -60,7 +59,7 @@ impl<UART: Deref<Target = RegisterBlock>, PADS> UartExt<PADS> for UART {
         pads: PADS,
         clocks: &Clocks,
         state: &'static SerialState,
-    ) -> Result<AsyncSerial<Self, PADS>, ConfigError>
+    ) -> Result<AsyncSerial<'a, PADS>, ConfigError>
     where
         PADS: Pads<I>,
     {
