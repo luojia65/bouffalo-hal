@@ -26,6 +26,8 @@ enum Commands {
     Flash(Flash),
     /// Convert ELF file to binary file.
     Elf2bin(Elf2Bin),
+
+    Run(Run),
 }
 
 #[derive(Args)]
@@ -57,13 +59,22 @@ struct Elf2Bin {
     patch: bool,
 }
 
+#[derive(Args)]
+struct Run {
+    /// The path to the input ELF file.
+    input_file: String,
+    /// The serial port to use for flashing. If not provided, a list of available ports will be shown.
+    #[clap(short, long)]
+    port: Option<String>,
+}
+
 fn main() {
     let args = Cli::parse();
     match &args.command {
         Commands::Patch(patch) => {
             let input_file = patch.input_file.clone();
             let output_file = patch.output_file.clone().unwrap_or(input_file.clone());
-            patch_image(input_file, output_file);
+            patch_image(&input_file, &output_file);
         }
         Commands::Flash(flash) => {
             let port = match &flash.port {
@@ -78,7 +89,7 @@ fn main() {
                         .expect("select serial port")
                 }
             };
-            flash_image(flash.image.clone(), port);
+            flash_image(&flash.image, &port);
         }
         Commands::Elf2bin(elf2bin) => {
             let input_file = elf2bin.input_file.clone();
@@ -92,13 +103,32 @@ fn main() {
             if elf2bin.patch {
                 // TODO: add a inner `patch_image` for bytes to patch the output
                 // TODO: binary before saving into file system.
-                patch_image(output_file.clone(), output_file);
+                patch_image(&output_file, &output_file);
             }
+        }
+        Commands::Run(run) => {
+            let port = match &run.port {
+                Some(port) => port.clone(),
+                None => {
+                    let ports = serialport::available_ports().expect("list serial ports");
+                    let mut port_names: Vec<String> =
+                        ports.iter().map(|p| p.port_name.clone()).collect();
+                    port_names.sort();
+                    Select::new("Select a serial port", port_names)
+                        .prompt()
+                        .expect("select serial port")
+                }
+            };
+            let elf_file = &run.input_file;
+            let bin_file = format!("{}.bin", elf_file);
+            elf_to_bin(&elf_file, &bin_file).expect("convert ELF to BIN");
+            patch_image(&bin_file, &bin_file);
+            flash_image(&bin_file, &port);
         }
     }
 }
 
-fn patch_image(input_file: String, output_file: String) {
+fn patch_image(input_file: &str, output_file: &str) {
     let mut f_in = File::open(&input_file).expect("open input file");
 
     let ops = match blri::check(&mut f_in) {
@@ -166,7 +196,7 @@ fn patch_image(input_file: String, output_file: String) {
     println!("patched image saved to {}", output_file);
 }
 
-fn flash_image(image: String, port: String) {
+fn flash_image(image: &str, port: &str) {
     const BAUDRATE: u32 = 2000000;
     const USB_INIT: &[u8] = b"BOUFFALOLAB5555RESET\0\x01";
     const HANDSHAKE: &[u8] = &[
