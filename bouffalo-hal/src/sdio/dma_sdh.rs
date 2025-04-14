@@ -12,27 +12,25 @@ use embedded_io::Write;
 use embedded_sdmmc::{Block, BlockDevice, BlockIdx};
 
 /// Managed Secure Digital Host Controller peripheral.
-pub struct Sdh<SDH, PADS, CH> {
-    sdh: SDH,
+pub struct Sdh<'a, PADS, CH> {
+    sdh: &'a RegisterBlock,
     pads: PADS,
     dma_channel: CH,
     block_count: u32,
 }
 
-impl<'a, SDH: Deref<Target = RegisterBlock>, PADS, CH: Deref<Target = UntypedChannel<'a>>>
-    Sdh<SDH, PADS, CH>
-{
+impl<'a, PADS, CH: Deref<Target = UntypedChannel<'a>>> Sdh<'a, PADS, CH> {
     /// Create a new instance of the SDH peripheral.
     #[inline]
-    pub fn new<const I: usize>(
-        sdh: SDH,
+    pub fn new(
+        sdh: &'a RegisterBlock,
         pads: PADS,
         dma_channel: CH,
         config: Config,
         glb: &glb::v2::RegisterBlock,
     ) -> Self
     where
-        PADS: Pads<I>,
+        PADS: Pads,
     {
         // Reset SDH peripheral.
         unsafe {
@@ -162,14 +160,12 @@ impl<'a, SDH: Deref<Target = RegisterBlock>, PADS, CH: Deref<Target = UntypedCha
 
     /// Release the SDH instance and return the pads and configs.
     #[inline]
-    pub fn free(self) -> (SDH, PADS, CH) {
-        (self.sdh, self.pads, self.dma_channel)
+    pub fn free(self) -> (PADS, CH) {
+        (self.pads, self.dma_channel)
     }
 }
 
-impl<'a, SDH: Deref<Target = RegisterBlock>, PADS, CH: Deref<Target = UntypedChannel<'a>>>
-    BlockDevice for Sdh<SDH, PADS, CH>
-{
+impl<'a, PADS, CH: Deref<Target = UntypedChannel<'a>>> BlockDevice for Sdh<'a, PADS, CH> {
     type Error = core::convert::Infallible;
 
     #[inline]

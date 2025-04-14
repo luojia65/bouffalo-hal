@@ -998,12 +998,49 @@ soc! {
 }
 
 pub use bouffalo_hal::clocks::Clocks;
-use bouffalo_hal::dma::{EightChannels, FourChannels, Periph4Dma01, Periph4Dma2};
+use bouffalo_hal::{
+    dma::{EightChannels, FourChannels, Periph4Dma01, Periph4Dma2},
+    sdio::SdhExt,
+};
 
 dma! {
     DMA0: (0, EightChannels, Periph4Dma01),
     DMA1: (1, FourChannels, Periph4Dma01),
     DMA2: (2, EightChannels, Periph4Dma2),
+}
+
+impl SdhExt<'static> for SDH {
+    #[inline]
+    fn with_dma<PADS, CH>(
+        self,
+        pads: PADS,
+        dma_channel: CH,
+        config: bouffalo_hal::sdio::Config,
+        glb: &bouffalo_hal::glb::v2::RegisterBlock,
+    ) -> bouffalo_hal::sdio::Sdh<'static, PADS, CH>
+    where
+        PADS: bouffalo_hal::sdio::Pads,
+        CH: core::ops::Deref<Target = bouffalo_hal::dma::UntypedChannel<'static>>,
+    {
+        bouffalo_hal::sdio::Sdh::new(unsafe { &*SDH::ptr() }, pads, dma_channel, config, glb)
+    }
+}
+
+impl<'a> SdhExt<'a> for &'a mut SDH {
+    #[inline]
+    fn with_dma<PADS, CH>(
+        self,
+        pads: PADS,
+        dma_channel: CH,
+        config: bouffalo_hal::sdio::Config,
+        glb: &bouffalo_hal::glb::v2::RegisterBlock,
+    ) -> bouffalo_hal::sdio::Sdh<'a, PADS, CH>
+    where
+        PADS: bouffalo_hal::sdio::Pads,
+        CH: core::ops::Deref<Target = bouffalo_hal::dma::UntypedChannel<'a>>,
+    {
+        bouffalo_hal::sdio::Sdh::new(self, pads, dma_channel, config, glb)
+    }
 }
 
 // Used by macros only.

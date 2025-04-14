@@ -4,7 +4,7 @@
 use bouffalo_hal::{
     dma::{self, *},
     prelude::*,
-    sdio::{Config as SdhConfig, Sdh},
+    sdio::Config as SdhConfig,
     uart::Config as UartConfig,
 };
 use bouffalo_rt::{Clocks, Peripherals, entry};
@@ -66,7 +66,7 @@ fn main(p: Peripherals, c: Clocks) -> ! {
 
     // Sdh init.
     let config = SdhConfig::default();
-    let mut sdcard = Sdh::new(p.sdh, pads, dma0.ch0, config, &p.glb);
+    let mut sdcard = p.sdh.with_dma(pads, dma0.ch0, config, &p.glb);
     sdcard.init(&mut serial, true);
 
     let time_source = MyTimeSource {};

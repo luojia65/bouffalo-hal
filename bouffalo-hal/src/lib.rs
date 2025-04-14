@@ -36,6 +36,7 @@ pub mod prelude {
     pub use crate::dma::DmaExt as _;
     pub use crate::gpio::{IntoPad as _, IntoPadv2 as _};
     pub use crate::lz4d::Lz4dExt as _;
+    pub use crate::sdio::SdhExt as _;
     pub use crate::uart::UartExt as _;
     pub use embedded_hal::digital::{InputPin as _, OutputPin as _, PinState};
     pub use embedded_hal::i2c::I2c as _;

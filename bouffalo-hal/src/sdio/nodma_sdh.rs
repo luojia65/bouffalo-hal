@@ -17,14 +17,9 @@ pub struct Sdh<SDH, PADS> {
 impl<SDH: Deref<Target = RegisterBlock>, PADS> Sdh<SDH, PADS> {
     /// Create a new instance of the SDH peripheral.
     #[inline]
-    pub fn new<const I: usize>(
-        sdh: SDH,
-        pads: PADS,
-        config: Config,
-        glb: &glb::v2::RegisterBlock,
-    ) -> Self
+    pub fn new(sdh: SDH, pads: PADS, config: Config, glb: &glb::v2::RegisterBlock) -> Self
     where
-        PADS: Pads<I>,
+        PADS: Pads,
     {
         // Reset SDH peripheral.
         unsafe {

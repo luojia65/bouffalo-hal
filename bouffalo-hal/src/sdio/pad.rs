@@ -1,7 +1,7 @@
 use crate::gpio::{self, Alternate};
 
 /// Valid SDH pads.
-pub trait Pads<const I: usize> {}
+pub trait Pads {}
 
 impl<
     'a,
@@ -16,7 +16,7 @@ impl<
     const N4: usize,
     const N5: usize,
     const N6: usize,
-> Pads<1>
+> Pads
     for (
         Alternate<'a, N1, gpio::Sdh>,
         Alternate<'b, N2, gpio::Sdh>,
