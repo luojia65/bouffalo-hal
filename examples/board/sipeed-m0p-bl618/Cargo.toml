@@ -1,0 +1,15 @@
+[package]
+name = "sipeed-m0p-bl618"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+bouffalo-hal = { path = "../../../bouffalo-hal", features = ["bl616"] }
+bouffalo-rt = { path = "../../../bouffalo-rt", features = ["bl616"] }
+panic-halt = "1.0.0"
+riscv = "0.13.0"
+
+[[bin]]
+name = "blink"
+test = false
