@@ -4,7 +4,7 @@ use crate::{HalBasicConfig, HalFlashConfig, HalPatchCfg};
 use core::ops::Deref;
 
 #[cfg(all(feature = "bl616", target_arch = "riscv32"))]
-#[naked_function::naked]
+#[unsafe(naked)]
 #[link_section = ".text.entry"]
 #[export_name = "_start"]
 unsafe extern "C" fn start() -> ! {
