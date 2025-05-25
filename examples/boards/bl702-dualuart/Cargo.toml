@@ -1,0 +1,18 @@
+[package]
+name = "bl702-dualuart"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+bouffalo-hal = { path = "../../../bouffalo-hal" }
+bouffalo-rt = { path = "../../../bouffalo-rt" }
+panic-halt = "1.0.0"
+embedded-hal = "1.0.0"
+riscv = "0.13.0"
+
+[[bin]]
+name = "bl702-dualuart"
+test = false
+
+[features]
+default = ["bouffalo-hal/bl702", "bouffalo-rt/bl702"]

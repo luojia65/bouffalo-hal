@@ -1,4 +1,4 @@
-use super::typestate::{Floating, Input, Output, PullDown, PullUp};
+use super::typestate::{Floating, Input, Output, PullDown, PullUp, Uart};
 use crate::glb::{Drive, Pull, v1};
 use core::marker::PhantomData;
 use embedded_hal::digital::{ErrorType, InputPin, OutputPin};
@@ -172,6 +172,23 @@ impl<'a, const N: usize, M> Padv1<'a, N, M> {
         unsafe { self.base.gpio_config[N >> 1].write(config) };
         let val = self.base.gpio_output_enable.read();
         unsafe { self.base.gpio_output_enable.write(val & !(1 << N)) };
+        Padv1 {
+            base: self.base,
+            _mode: PhantomData,
+        }
+    }
+}
+
+impl<'a, const N: usize, M> Padv1<'a, N, M> {
+    /// Configures the pin to operate as UART signal.
+    #[inline]
+    pub fn into_uart(self) -> Padv1<'a, N, Uart> {
+        let config = self.base.gpio_config[N >> 1]
+            .read()
+            .set_function(N & 0x1, v1::Function::Uart)
+            .enable_input(N & 0x1)
+            .set_pull(N & 0x1, Pull::None);
+        unsafe { self.base.gpio_config[N].write(config) };
         Padv1 {
             base: self.base,
             _mode: PhantomData,

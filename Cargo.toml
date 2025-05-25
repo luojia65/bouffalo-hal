@@ -23,5 +23,6 @@ members = [
     "examples/peripherals/psram-demo",
     "examples/peripherals/sdh-demo",
     "examples/peripherals/sdh-dma-demo",
+    "examples/boards/bl702-dualuart",
 ]
 resolver = "3"
