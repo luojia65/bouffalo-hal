@@ -13,14 +13,13 @@ cfg-if = "1.0.0"
 embedded-time = "0.12.1"
 plic = "0.0.2"
 xuantie-riscv = { git = "https://github.com/rustsbi/xuantie", rev = "fe7ec712" }
-
-serde = { version = "1.0.219", optional = true }
+serde = "1.0.219"
 serde-diff = { version = "0.4.1", optional = true }
-serde_json = { version = "1.0.140", optional = true }
+
 [dev-dependencies]
+serde_json = "1.0.140"
 treediff = { version = "5.0.0", features = ["with-serde-json"] }
 bouffalo-rt = { path = ".", features = ["image_fuse"] }
-
 
 [features]
 default = []
@@ -32,4 +31,4 @@ bl808-dsp = ["bouffalo-hal/bl808", "bouffalo-rt-macros/bl808-dsp"]
 bl808-lp = ["bouffalo-hal/bl808", "bouffalo-rt-macros/bl808-lp"]
 # BL702, BL704 and BL706 chip series.
 bl702 = ["bouffalo-hal/bl702", "bouffalo-rt-macros/bl702"]
-image_fuse = ["serde", "serde-diff", "serde_json"]
+image_fuse = ["serde-diff", "serde_json"]
