@@ -5,7 +5,7 @@
 mod macros;
 
 pub use bouffalo_rt_macros::{entry, exception, interrupt};
-#[cfg(feature = "image_fuse")]
+
 use serde::{Deserialize, Serialize};
 
 pub mod arch;
@@ -50,8 +50,7 @@ cfg_if::cfg_if! {
 pub extern "C" fn default_handler() {}
 
 /// Flash configuration in ROM header.
-#[cfg_attr(feature = "image_fuse", derive(Serialize, Deserialize))]
-#[cfg_attr(any(test, debug_assertions), derive(Debug, Clone, PartialEq, Eq))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(C)]
 pub struct HalFlashConfig {
     magic: u32,
@@ -182,8 +181,7 @@ impl HalFlashConfig {
     }
 }
 
-#[cfg_attr(feature = "image_fuse", derive(Serialize, Deserialize))]
-#[cfg_attr(any(test, debug_assertions), derive(Debug, Clone, PartialEq, Eq))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(C)]
 struct SpiFlashCfgType {
     /// Serail flash uint32erface mode,bit0-3:IF mode,bit4:unwrap,bit5:32-bits addr mode support.
@@ -345,8 +343,7 @@ impl SpiFlashCfgType {
         Ok(spi_flash_cfg_type)
     }
 }
-#[cfg_attr(feature = "image_fuse", derive(Serialize, Deserialize))]
-#[cfg_attr(any(test, debug_assertions), derive(Debug, Clone, PartialEq, Eq))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(C)]
 pub struct HalBasicConfig {
     /// Flags 4bytes
@@ -415,8 +412,7 @@ impl HalBasicConfig {
 /// Bit flags for HalBasicConfig.flag, only for debug purposes
 // Note that the definition is different from the comments in HalBasicConfig,
 // this is derived from the 010 Editor bt file.
-#[cfg_attr(feature = "image_fuse", derive(Serialize, Deserialize))]
-#[cfg_attr(any(test, debug_assertions), derive(Debug, Clone, PartialEq, Eq))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BasicConfigFlags {
     /// Raw flag value
     pub raw: u32,
@@ -516,8 +512,7 @@ impl BasicConfigFlags {
     }
 }
 /// Program or ROM code patches.
-#[cfg_attr(feature = "image_fuse", derive(Serialize, Deserialize))]
-#[cfg_attr(any(test, debug_assertions), derive(Debug, Clone, PartialEq, Eq))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(C)]
 pub struct HalPatchCfg {
     addr: u32,
